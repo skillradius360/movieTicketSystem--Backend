@@ -9,7 +9,7 @@ dotenv.config({
 connectDB().then(()=>{
 
     try {
-        app.listen(process.env.PORT || 8080,()=>{
+        app.listen(process.env.PORT || 8000,()=>{
             app.on("error",(err)=>{
                 console.log("some error occured with express!",err.message)
             })

@@ -21,4 +21,9 @@ app.use(cors({
     origin:"*"
 }))
 
+// ***********************************************************
+import { userRouter } from "./routes/user.routes.js"
+
+app.use("/users",userRouter)
+
 export  {app}
