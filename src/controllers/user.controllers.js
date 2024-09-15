@@ -55,7 +55,9 @@ const login = asyncHandler((req,res)=>{
     }
 })
 
-const logout = asyncHandler()
+const logout = asyncHandler((req,res)=>{
+    return res.status(200)
+})
 
 const refreshAccess= asyncHandler((req,res)=>{
 
