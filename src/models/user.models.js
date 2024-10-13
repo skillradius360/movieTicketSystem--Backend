@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 const userSchema= mongoose.Schema({
     username:{
         type:String,
@@ -48,36 +48,35 @@ const userSchema= mongoose.Schema({
     hallNo:{
         type:mongoose.Types.ObjectId,
         ref:"hall"
+    },
+    otp:{
+        type:String,
+        default:"0"
     }
 },{timestamps:true}
 )
 
 userSchema.pre("save",async function(next){
-if(this.isModified("password")){
+if(!this.isModified("password")){
     return next()
 }
-this.password= await bcrypt.hash(this.password,8)
+this.password=  await bcrypt.hash(this.password,8)
 next()
 
 })
 
-userSchema.methods.matchPassword= function(password){
 
-    if(!password){
-        console.log("enter the password")
-        return;
-    }
-    const  isRight= bcrypt.compare(password,this.password)
-    return isRight
+userSchema.methods.matchPassword= async function(password){
 
+    return await bcrypt.compare(password,this.password)
 }
 
 userSchema.methods.generateAccessToken= function(){
 
     return jwt.sign({
-        _id:_id,
-        email:email,
-        username:username
+        _id:this._id,
+        email:this.email,
+        username:this.username
     },process.env.ACCESS_TOKEN_SECRET,
 {expiresIn:process.env.ACCESS_TOKEN_EXPIRY})
 }
@@ -86,12 +85,13 @@ userSchema.methods.generateAccessToken= function(){
 userSchema.methods.generateRefreshToken= function(){
 
     return jwt.sign({
-        _id:_id,
-        email:email,
-        username:username
+        _id:this._id,
+    
     },process.env.REFRESH_TOKEN_SECRET,
 {expiresIn:process.env.REFRESH_TOKEN_EXPIRY})
 }
+
+mongoose.plugin(mongooseAggregatePaginate)
 
 export const user= mongoose.model("user",userSchema)
 
