@@ -312,7 +312,7 @@ const resetCredentials= asyncHandler(async(req,res)=>{
     const matchedUser = await user.findById(userId)
     if(!matchedUser) throw new apiError(400, "no user found after otp validation")
 
-
+        
     matchedUser.password= newPassword
     await matchedUser.save()
 
