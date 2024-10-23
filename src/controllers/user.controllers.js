@@ -302,23 +302,26 @@ const resetCredentials= asyncHandler(async(req,res)=>{
     const {newPassword }= req.body
     const {userId} = req.params
 
+
     if([userId, newPassword].some((data)=>data?.trim==="")){
         throw new apiError(400,"please provide old or new passwords")
     }
+
+    if(!isValidObjectId(userId))throw new apiError(400,"userId passed not valid")
 
     const matchedUser = await user.findById(userId)
     if(!matchedUser) throw new apiError(400, "no user found after otp validation")
 
 
     matchedUser.password= newPassword
-    await matchedUser.save({validateBeforeSave:false})
+    await matchedUser.save()
 
 
-    // if(!updatedCredsStatus){
-    //     throw new apiError(400,"Failure updating password ")
+    // if(matchedUser.password === newPassword){
+    //     throw new apiError(400,"Failure updating password or pasword not encypted ")
     // }
 
-    return res.status(200).json(new apiResponse(200,{},"passwords reset success"))
+    return res.status(200).json(new apiResponse(200,{Newpassword:matchedUser.password},"passwords reset success"))
 
 })
 //  *****************************************************2 F A ends here ************
