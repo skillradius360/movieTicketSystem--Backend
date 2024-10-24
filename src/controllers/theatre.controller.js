@@ -1,7 +1,7 @@
 import mongoose, { isValidObjectId } from "mongoose"
-import { theatres } from "../models/theatre.models"
-import { user } from "../models/user.models"
-import {asyncHandler} from "../utils/asyncHandler"
+import { theatres } from "../models/theatre.models.js"
+import { user } from "../models/user.models.js"
+import asyncHandler from "../utils/asyncHandler.js"
 import {apiError} from "../utils/apiError.js"
 import {apiResponse} from "../utils/apiResponse.js"
 
@@ -26,6 +26,8 @@ const findLocations= async function(country="India"){
     return locationsFinalData
   
 }
+
+
 
 const addTheatre = asyncHandler(async(req,res)=>{
     const {title,location,hallType}= req.body
@@ -86,21 +88,26 @@ const findByLocation = asyncHandler(async(req,res)=>{
         throw new apiError(400,"location not properly entered!!")
     }
 
-    const allLocationsData= findLocations()
+    const allLocationsData= await findLocations()
     if(!allLocationsData) {
         throw new apiError(400,"localtions not fetched successfuly")
     }
-
+    
     const cityExists= allLocationsData.data?.some((e)=>e===loc)
+    
     if(!cityExists){
-        throw new apiError(400,"city invalid")
+        throw new apiError(400,"city not found!!")
     }
-
-    const allTheatreData= theatres.find({location:loc})
+    
+    const allTheatreData= await theatres.find({location:loc})
     if(!allTheatreData){throw new apiError("theatre data fetching PROBLEM occured according to location")}
+    console.log(allTheatreData)
+
+    return res.status(200).json(new apiResponse(200,allTheatreData,"theatre data fetch success"))
+
 })
 
-return res.status(200).json(new apiResponse(200,allTheatreData,"theatre data fetch success"))
+
 
 export {addTheatre,
     removeTheatre,

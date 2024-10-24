@@ -23,7 +23,9 @@ app.use(cors({
 
 // ***********************************************************
 import { userRouter } from "./routes/user.routes.js"
+import {theatreRouter} from "./routes/theatre.routes.js"
 
 app.use("/users",userRouter)
+app.use("/theatre",theatreRouter)
 
 export  {app}
